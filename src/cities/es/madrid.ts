@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { csvObjects } from '../../lib/csv.ts';
 import type { Centre, CityConverter, Conversion, CourseRecord } from '../../lib/types.ts';
 
@@ -7,11 +9,8 @@ import type { Centre, CityConverter, Conversion, CourseRecord } from '../../lib/
 // must stay identical to the adapter so editions keep their identity.
 
 const DAYS = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO'];
-const dayFormat = new Intl.DateTimeFormat('es', { weekday: 'long', timeZone: 'UTC' });
-// 1 January 2024 was a Monday.
-const DAY_NAMES = DAYS.map((_, d) =>
-  dayFormat.format(Date.UTC(2024, 0, 1 + d)).toLocaleLowerCase('es'),
-);
+// "lunes" … "domingo"; 1 January 2024 was a Monday.
+const DAY_NAMES = DAYS.map((_, d) => format(new Date(2024, 0, 1 + d), 'EEEE', { locale: es }));
 const dayList = new Intl.ListFormat('es', { type: 'conjunction' });
 
 type Row = Record<string, string>;
