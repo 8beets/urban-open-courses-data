@@ -61,7 +61,8 @@ Add a new country, region or city as a new folder using the same kind of ID.
   itself ([8beets/urbanlabs#144](https://github.com/8beets/urbanlabs/issues/144)).
 - **Why filtered (exception to the rule above).** The original is ~325 MB, over GitHub's
   100 MB file limit. [`scripts/filter-barcelona-agenda.py`](scripts/filter-barcelona-agenda.py)
-  keeps only the rows of events filed under "Cursos i tallers" whose venue is a casal.
+  keeps only the rows of events filed under "Cursos i tallers" whose venue is a casal,
+  library, museum or ateneu (centres cívics are left out; UrbanLabs gets them from Miram).
   Kept rows, header, encoding and line endings are copied byte-for-byte, so the file
   parses exactly like the original. To refresh it, run from a home connection:
 

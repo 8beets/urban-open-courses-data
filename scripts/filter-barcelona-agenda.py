@@ -3,8 +3,8 @@
 
 The published agenda-ampliada CSV (~325 MB) is over GitHub's 100 MB file limit, so this
 keeps only the rows of events filed under "Cursos i tallers" whose venue (addresses_place)
-is a casal: de barri, de gent gran, infantil... (8beets/urbanlabs#144). Kept rows, the
-header, UTF-16LE + BOM encoding and CRLF row endings are copied byte-for-byte.
+is a casal, library, museum or ateneu (8beets/urbanlabs#144). Kept rows, the header,
+UTF-16LE + BOM encoding and CRLF row endings are copied byte-for-byte.
 
 Usage: python3 scripts/filter-barcelona-agenda.py [downloaded.csv]
 Without an argument it downloads the file (works from a home connection; the portal
@@ -23,7 +23,8 @@ URL = ("https://opendata-ajuntament.barcelona.cat/data/dataset/"
        "ffa6d773-7998-4e0f-8e98-c80abce7126f/download")
 OUT = Path(__file__).resolve().parent.parent / "es/catalunya/barcelona/agenda-diaria-cursos-i-tallers.csv"
 CATEGORY = "Cursos i tallers"
-VENUE = re.compile(r"\bcasal\b", re.I)
+# Centres cívics are skipped (e.g. "Centre Cívic Ateneu Fort Pienc"): UrbanLabs gets them from Miram.
+VENUE = re.compile(r"^(?!.*centre c[ií]vic).*\b(casal|biblioteca|museu|ateneu)\b", re.I)
 BOM = "\ufeff"
 
 
@@ -57,7 +58,7 @@ def main():
             shutil.copyfileobj(r, f)
     text = src.read_bytes().decode("utf-16-le")
     out, events, rows, total = filter_agenda(text)
-    assert events, f"no '{CATEGORY}' events at casals found; has the format changed?"
+    assert events, f"no '{CATEGORY}' events at matching venues found; has the format changed?"
     OUT.write_bytes(out.encode("utf-16-le"))
     print(f"kept {events} of {total} events ({rows} rows) -> {OUT} ({OUT.stat().st_size / 1e6:.1f} MB)")
 
