@@ -12,9 +12,7 @@ returns 403 to GitHub Actions runners).
 """
 import csv
 import re
-import shutil
 import sys
-import tempfile
 import urllib.request
 from pathlib import Path
 
@@ -50,13 +48,12 @@ def filter_agenda(text):
 
 def main():
     if len(sys.argv) > 1:
-        src = Path(sys.argv[1])
+        data = Path(sys.argv[1]).read_bytes()
     else:
-        src = Path(tempfile.mkdtemp()) / "agenda-ampliada.csv"
-        print(f"downloading to {src}")
-        with urllib.request.urlopen(URL) as r, open(src, "wb") as f:
-            shutil.copyfileobj(r, f)
-    text = src.read_bytes().decode("utf-16-le")
+        print("downloading (~325 MB)...")
+        with urllib.request.urlopen(URL) as r:
+            data = r.read()
+    text = data.decode("utf-16-le")
     out, events, rows, total = filter_agenda(text)
     assert events, f"no '{CATEGORY}' events at matching venues found; has the format changed?"
     OUT.write_bytes(out.encode("utf-16-le"))
